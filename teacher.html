@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher's Day Photo Gallery</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 20px;
+      color: #fff;
+      font-size: 3rem;
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      text-align: center;
+      margin: 30px 0 15px;
+      font-size: 2rem;
+      color: #fff;
+      text-shadow: 1px 1px 8px rgba(0,0,0,0.4);
+    }
+
+    /* Slideshow Container */
+    .slideshow-container {
+      position: relative;
+      max-width: 1000px;
+      margin: 20px auto;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      height: 400px;
+    }
+
+    .mySlides {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .mySlides img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .active-slide {
+      opacity: 1 !important;
+      z-index: 1;
+    }
+
+    /* Next & previous buttons */
+    .prev, .next {
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      padding: 16px;
+      margin-top: -22px;
+      color: white;
+      font-weight: bold;
+      font-size: 24px;
+      transition: 0.3s;
+      border-radius: 50%;
+      user-select: none;
+      background: rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+
+    .next { right: 20px; }
+    .prev { left: 20px; }
+
+    .prev:hover, .next:hover {
+      background: rgba(0,0,0,0.8);
+    }
+
+    /* Dots */
+    .dots {
+      text-align: center;
+      position: relative;
+      top: -10px;
+    }
+
+    .dot {
+      cursor: pointer;
+      height: 12px;
+      width: 12px;
+      margin: 0 4px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+      transition: background-color 0.3s ease;
+    }
+
+    .dot.active, .dot:hover {
+      background-color: #717171;
+    }
+
+    /* Gallery */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 15px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.06);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    /* Popup Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 2000;
+    }
+
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      animation: popIn 0.6s ease;
+    }
+
+    .modal-content h2 {
+      margin: 0 0 15px;
+      font-size: 2rem;
+      color: #e67e22;
+    }
+
+    .modal-content p {
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    .close-btn {
+      margin-top: 20px;
+      background: #e67e22;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .close-btn:hover {
+      background: #d35400;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 3000;
+    }
+
+    .lightbox.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 80%;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      animation: zoomIn 0.4s ease;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px; right: 30px;
+      font-size: 2rem;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌸 Teacher's Day Memories 🌸</h1>
+
+  <!-- Slideshow -->
+  <div class="slideshow-container">
+    <div class="mySlides"><img src="img1.png" alt="Slide 1"></div>
+    <div class="mySlides"><img src="img2.png" alt="Slide 2"></div>
+    <div class="mySlides"><img src="img3.png" alt="Slide 3"></div>
+    <div class="mySlides"><img src="photos/pic4.jpg" alt="Slide 4"></div>
+    <div class="mySlides"><img src="photos/pic5.jpg" alt="Slide 5"></div>
+    <div class="mySlides"><img src="photos/pic6.jpg" alt="Slide 6"></div>
+
+    <!-- Navigation -->
+    <a class="prev" onclick="plusSlides(-1)">❮</a>
+    <a class="next" onclick="plusSlides(1)">❯</a>
+  </div>
+
+  <div class="dots">
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+    <span class="dot" onclick="currentSlide(3)"></span>
+    <span class="dot" onclick="currentSlide(4)"></span>
+    <span class="dot" onclick="currentSlide(5)"></span>
+    <span class="dot" onclick="currentSlide(6)"></span>
+  </div>
+
+  <!-- Gallery -->
+  <h2>📸 More Photos</h2>
+  <div class="gallery">
+    <img src="" alt="Celebration 1">
+    <img src="" alt="Celebration 2">
+    <img src="" alt="Celebration 3">
+    <img src="photos/pic4.jpg" alt="Celebration 4">
+    <img src="photos/pic5.jpg" alt="Celebration 5">
+    <img src="photos/pic6.jpg" alt="Celebration 6">
+    <img src="photos/pic7.jpg" alt="Celebration 7">
+    <img src="photos/pic8.jpg" alt="Celebration 8">
+  </div>
+
+  <!-- Popup Modal -->
+  <div class="modal" id="popup">
+    <div class="modal-content">
+      <h2>🎉 Happy Teacher's Day! 🎉</h2>
+      <p>Thank you to all our teachers for guiding us and inspiring us every day. 💐</p>
+      <button class="close-btn" onclick="closePopup()">Close</button>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <span class="lightbox-close" onclick="closeLightbox()">✖</span>
+    <img id="lightbox-img" src="">
+  </div>
+
+<script>
+  // Popup
+  window.onload = function() {
+    document.getElementById("popup").classList.add("show");
+    showSlides(slideIndex);
+    autoSlide();
+  };
+
+  function closePopup() {
+    document.getElementById("popup").classList.remove("show");
+  }
+
+  // Slideshow
+  let slideIndex = 1;
+  let slideTimer;
+
+  function plusSlides(n) {
+    clearTimeout(slideTimer);
+    showSlides(slideIndex += n);
+    autoSlide();
+  }
+
+  function currentSlide(n) {
+    clearTimeout(slideTimer);
+    showSlides(slideIndex = n);
+    autoSlide();
+  }
+
+  function showSlides(n) {
+    let slides = document.getElementsByClassName("mySlides");
+    let dots = document.getElementsByClassName("dot");
+    if (n > slides.length) {slideIndex = 1}
+    if (n < 1) {slideIndex = slides.length}
+
+    for (let i = 0; i < slides.length; i++) {
+      slides[i].classList.remove("active-slide");
+    }
+    for (let i = 0; i < dots.length; i++) {
+      dots[i].classList.remove("active");
+    }
+
+    slides[slideIndex-1].classList.add("active-slide");
+    dots[slideIndex-1].classList.add("active");
+  }
+
+  function autoSlide() {
+    slideTimer = setTimeout(function() {
+      plusSlides(1);
+    }, 4000); // auto change every 4s
+  }
+
+  // Lightbox
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
+
+  document.querySelectorAll(".slideshow-container img, .gallery img").forEach(img => {
+    img.addEventListener("click", () => {
+      lightbox.classList.add("show");
+      lightboxImg.src = img.src;
+    });
+  });
+
+  function closeLightbox() {
+    lightbox.classList.remove("show");
+  }
+</script>
+
+</body>
+</html>
